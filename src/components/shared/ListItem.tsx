@@ -19,7 +19,7 @@ export function ListItem({
 }: Props) {
   return (
     <li
-      className={`${className} flex items-center p-2 gap-2 border-b border-gray-600 bg-slate-900 hover:bg-slate-800`}
+      className={`${className} flex items-center p-2 gap-2 border-b border-gray-700 bg-slate-900 hover:bg-slate-800`}
       {...props}
     >
       <img
