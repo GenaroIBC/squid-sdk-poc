@@ -1,16 +1,46 @@
+import { useEffect, useId, useRef } from "react"
+
 type Props = {
   children: React.ReactNode
-  label: string
+  label: React.ReactNode
 }
+
 export function Dropdown({ label, children }: Props) {
+  const dropdownId = useId()
+  const checkboxRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const closeDropdownOnOutsideClick = (e: MouseEvent) => {
+      if (
+        checkboxRef.current &&
+        !checkboxRef.current.contains(e.target as Node)
+      ) {
+        checkboxRef.current.checked = false
+      }
+    }
+
+    window.addEventListener("click", closeDropdownOnOutsideClick)
+
+    return () => {
+      window.removeEventListener("click", closeDropdownOnOutsideClick)
+    }
+  })
+
   return (
-    <div className="relative bg-slate-300 py-2 px-4 rounded-md">
-      <input type="checkbox" id="dropdown" className="peer hidden absolute" />
+    <div className="relative">
+      <input
+        ref={checkboxRef}
+        type="checkbox"
+        hidden
+        id={dropdownId}
+        className="peer hidden absolute"
+      />
       <label
-        htmlFor="dropdown"
-        className="peer flex items-center space-x-1 cursor-pointer"
+        htmlFor={dropdownId}
+        className="peer flex items-center space-x-1 cursor-pointer bg-slate-700 px-4 py-2 rounded-md"
       >
-        <span className="text-lg text-black">{label}</span>
+        {label}
+
         <svg
           className="h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +57,7 @@ export function Dropdown({ label, children }: Props) {
         </svg>
       </label>
 
-      <div className="w-full peer-checked:opacity-100 peer-checked:pointer-events-auto pointer-events-none absolute mt-1 right-0 top-full min-w-max shadow rounded opacity-0 bg-gray-300 border border-gray-400 transition delay-75 ease-in-out z-10">
+      <div className="w-full peer-checked:opacity-100 peer-checked:pointer-events-auto pointer-events-none absolute mt-1 right-0 top-full min-w-max shadow rounded opacity-0 bg-gray-300 border border-gray-700 transition delay-75 ease-in-out z-10">
         {children}
       </div>
     </div>
