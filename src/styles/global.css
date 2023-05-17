@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   --brand-primary-color: #e6fa36;
   --brand-secondary-color: #c29be7;
@@ -71,10 +77,22 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button:not(:disabled):hover {
   border-color: #646cff;
 }
-button:focus,
-button:focus-visible {
+button:not(:disabled):focus,
+button:not(:disabled):focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
+}
+button:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
