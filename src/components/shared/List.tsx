@@ -4,10 +4,8 @@ type Props = {
 
 export function List({ children }: Props) {
   return (
-    <article className="flex-grow bg-slate-800">
-      <ul className="flex flex-col rounded-md max-h-96 overflow-auto">
-        {children}
-      </ul>
-    </article>
+    <ul className="flex flex-col flex-grow rounded-xl bg-slate-800 max-h-96 overflow-auto">
+      {children}
+    </ul>
   )
 }

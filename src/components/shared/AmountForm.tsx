@@ -9,7 +9,10 @@ export function AmountForm({ handleChange, label }: Props) {
   const amountId = useId()
 
   return (
-    <form className="flex flex-col gap-2 items-center justify-center w-full">
+    <form
+      onSubmit={event => event.preventDefault()}
+      className="flex flex-col gap-2 items-center justify-center w-full"
+    >
       <label
         htmlFor={amountId}
         className="text-sm font-medium text-white text-center"
