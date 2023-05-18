@@ -16,7 +16,8 @@ export function Stake() {
     squidClient.chains[0]
   )
   const [selectedToken, setSelectedToken] = useState<Partial<TokenData>>(
-    squidClient.tokens[0]
+    squidClient.tokens.find(token => token.chainId === selectedChain.chainId) ??
+      squidClient.tokens[0]
   )
 
   const [status, setStatus] = useState<StatusResponse | null>(null)
