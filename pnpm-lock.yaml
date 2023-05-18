@@ -7,6 +7,9 @@ dependencies:
   '@rainbow-me/rainbowkit':
     specifier: 1.0.0
     version: 1.0.0(@types/react@18.0.28)(react-dom@18.2.0)(react@18.2.0)(viem@0.3.22)(wagmi@1.0.2)
+  ethers:
+    specifier: 5.7.2
+    version: 5.7.2
   react:
     specifier: ^18.2.0
     version: 18.2.0
@@ -768,7 +771,7 @@ packages:
       '@json-rpc-tools/utils': 1.7.6
       axios: 0.21.4
       safe-json-utils: 1.1.1
-      ws: 7.4.6
+      ws: 7.5.9
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -4645,7 +4648,7 @@ packages:
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.12.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.12.0
     dev: false
 
   /issue-parser@6.0.0:
@@ -6113,7 +6116,7 @@ packages:
       '@babel/runtime': 7.21.5
       eventemitter3: 4.0.7
       uuid: 8.3.2
-      ws: 8.12.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
     optionalDependencies:
       bufferutil: 4.0.7
       utf-8-validate: 5.0.10
@@ -6951,7 +6954,7 @@ packages:
       '@wagmi/chains': 0.2.16(typescript@5.0.2)
       abitype: 0.8.2(typescript@5.0.2)
       isomorphic-ws: 5.0.0(ws@8.12.0)
-      ws: 8.12.0(bufferutil@4.0.7)(utf-8-validate@5.0.10)
+      ws: 8.12.0
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -7179,8 +7182,21 @@ packages:
         optional: true
     dev: false
 
-  /ws@8.12.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+  /ws@8.12.0:
     resolution: {integrity: sha512-kU62emKIdKVeEIOIKVegvqpXMSTAMLJozpHZaJNDYqBjzlSYXQGviYwN1osDLJ9av68qHd4a2oSjd7yD4pacig==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
+
+  /ws@8.13.0(bufferutil@4.0.7)(utf-8-validate@5.0.10):
+    resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
