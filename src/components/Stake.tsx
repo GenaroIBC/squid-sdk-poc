@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { stakeMGLMR } from "../services/stakeMGLMR"
 import type { ChainData, StatusResponse, TokenData } from "@0xsquid/sdk"
 import { ethers } from "ethers"
@@ -10,6 +10,7 @@ import { Loading } from "./shared/Loading"
 import squidClient from "../lib/squidClient"
 import { StakingStatus } from "./StakingStatus"
 import { AmountForm } from "./shared/AmountForm"
+import { getTokenPrice } from "../services/getTokenPrice"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -21,7 +22,9 @@ export function Stake() {
   )
 
   const [status, setStatus] = useState<StatusResponse | null>(null)
-  const [amount, setAmount] = useState("0")
+  const [amount, setAmount] = useState("1")
+  const [tokenPrice, setTokenPrice] = useState(0)
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -53,6 +56,20 @@ export function Stake() {
     setSelectedToken(firstTokenOnNewChain)
     setSelectedChain(chain)
   }
+
+  useEffect(() => {
+    const { chainId, address } = selectedToken
+    if (!chainId || !address) return
+
+    getTokenPrice({
+      chainId: String(chainId),
+      tokenAddress: address
+    }).then(result => {
+      if (!result.ok) return setError(result.error)
+
+      return setTokenPrice(result.data)
+    })
+  }, [selectedToken])
 
   return (
     <section className="flex max-w-lg mx-auto flex-col gap-4 items-center justify-center bg-slate-900 p-4 rounded-md">
@@ -122,6 +139,10 @@ export function Stake() {
         handleChange={event => setAmount(event.target.value)}
         label="Amount"
       />
+
+      <span className="text-gray-400">
+        {(tokenPrice * Number(amount)).toFixed(2)}$
+      </span>
 
       <button
         className="bg-blue-500 py-2 px-4 text-white"
