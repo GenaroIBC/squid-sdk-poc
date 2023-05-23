@@ -80,85 +80,92 @@ export function Stake() {
         <ConnectButton />
       </div>
 
-      <section className="flex flex-wrap gap-2 justify-center items-center">
-        From
-        <Dropdown
-          label={
-            <span className="text-lg text-white flex gap-2 items-center">
-              <img
-                className="w-6 h-6 aspect-square rounded-full"
-                src={selectedChain.chainIconURI}
-                alt={selectedChain.chainName}
-              />
-              {selectedChain.chainName}
-            </span>
-          }
-        >
-          <List>
-            {squidClient.chains
-              .filter(chain => chain.chainType !== "cosmos")
-              .map((chain, i) => (
-                <ListItem
-                  key={i}
-                  imgAlt={chain.chainName}
-                  imgSrc={chain.chainIconURI}
-                  title={chain.chainName}
-                  subtitle={chain.nativeCurrency.symbol}
-                  onClick={() => handleChangeChain(chain)}
-                />
-              ))}
-          </List>
-        </Dropdown>
-        <Dropdown
-          label={
-            <span className="text-lg text-white flex gap-2 items-center">
-              <img
-                className="w-6 h-6 aspect-square rounded-full"
-                src={selectedToken.logoURI}
-                alt={selectedToken.name}
-              />
-              {selectedToken.symbol}
-            </span>
-          }
-        >
-          <List>
-            {squidClient.tokens
-              .filter(token => token.chainId === selectedChain.chainId)
-              .map((token, i) => (
-                <ListItem
-                  key={i}
-                  imgAlt={token.name}
-                  imgSrc={token.logoURI}
-                  title={token.symbol}
-                  subtitle={token.name}
-                  onClick={() => setSelectedToken(token)}
-                />
-              ))}
-          </List>
-        </Dropdown>
-      </section>
+      {signer.data && (
+        <>
+          <section className="flex flex-wrap gap-2 justify-center items-center">
+            From
+            <Dropdown
+              label={
+                <span className="text-lg text-white flex gap-2 items-center">
+                  <img
+                    className="w-6 h-6 aspect-square rounded-full"
+                    src={selectedChain.chainIconURI}
+                    alt={selectedChain.chainName}
+                  />
+                  {selectedChain.chainName}
+                </span>
+              }
+            >
+              <List>
+                {squidClient.chains
+                  .filter(chain => chain.chainType !== "cosmos")
+                  .map((chain, i) => (
+                    <ListItem
+                      key={i}
+                      imgAlt={chain.chainName}
+                      imgSrc={chain.chainIconURI}
+                      title={chain.chainName}
+                      subtitle={chain.nativeCurrency.symbol}
+                      onClick={() => handleChangeChain(chain)}
+                    />
+                  ))}
+              </List>
+            </Dropdown>
+            <Dropdown
+              label={
+                <span className="text-lg text-white flex gap-2 items-center">
+                  <img
+                    className="w-6 h-6 aspect-square rounded-full"
+                    src={selectedToken.logoURI}
+                    alt={selectedToken.name}
+                  />
+                  {selectedToken.symbol}
+                </span>
+              }
+            >
+              <List>
+                {squidClient.tokens
+                  .filter(token => token.chainId === selectedChain.chainId)
+                  .map((token, i) => (
+                    <ListItem
+                      key={i}
+                      imgAlt={token.name}
+                      imgSrc={token.logoURI}
+                      title={token.symbol}
+                      subtitle={token.name}
+                      onClick={() => setSelectedToken(token)}
+                    />
+                  ))}
+              </List>
+            </Dropdown>
+          </section>
 
-      <AmountForm
-        handleChange={event => setAmount(event.target.value)}
-        label="Amount"
-      />
+          <AmountForm
+            handleChange={event => setAmount(event.target.value)}
+            label="Amount"
+          />
 
-      <span className="text-gray-400">
-        {(tokenPrice * Number(amount)).toFixed(2)}$
-      </span>
+          <span className="text-gray-400">
+            {(tokenPrice * Number(amount)).toFixed(2)}$
+          </span>
 
-      <button
-        className="bg-blue-500 py-2 px-4 text-white"
-        disabled={
-          loading || !amount || !selectedToken.address || !selectedChain.chainId
-        }
-        onClick={handleStake}
-      >
-        {loading ? <Loading width="1.5rem" height="1.5rem" /> : <>Stake</>}
-      </button>
-      {error && <p className="text-red-500 text-xs">{error}</p>}
+          <button
+            className="bg-blue-500 py-2 px-4 text-white"
+            disabled={
+              loading ||
+              !amount ||
+              !selectedToken.address ||
+              !selectedChain.chainId
+            }
+            onClick={handleStake}
+          >
+            {loading ? <Loading width="1.5rem" height="1.5rem" /> : <>Stake</>}
+          </button>
+          {error && <p className="text-red-500 text-xs">{error}</p>}
 
-      <StakingStatus status={status} />
+          <StakingStatus status={status} />
+        </>
+      )}
     </section>
   )
 }
