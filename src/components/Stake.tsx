@@ -11,6 +11,7 @@ import squidClient from "../lib/squidClient"
 import { StakingStatus } from "./StakingStatus"
 import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
+import { useSigner } from "wagmi"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -20,6 +21,7 @@ export function Stake() {
     squidClient.tokens.find(token => token.chainId === selectedChain.chainId) ??
       squidClient.tokens[0]
   )
+  const signer = useSigner()
 
   const [status, setStatus] = useState<StatusResponse | null>(null)
   const [amount, setAmount] = useState("1")
@@ -31,14 +33,15 @@ export function Stake() {
   const handleStake = () => {
     const { address, decimals } = selectedToken
     const { chainId } = selectedChain
-    if (!chainId || !address || !decimals) return
+    if (!chainId || !address || !decimals || !signer.data) return
 
     setLoading(true)
     setError(null)
     stakeMGLMR({
       fromChain: Number(chainId),
       fromToken: address,
-      weiAmount: ethers.utils.parseUnits(amount, decimals).toString()
+      weiAmount: ethers.utils.parseUnits(amount, decimals).toString(),
+      signer: signer.data
     })
       .then(response => {
         if (!response.ok) return setError(response.error)

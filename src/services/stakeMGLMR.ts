@@ -4,7 +4,6 @@ import moonwellGlmrAbi from "../abi/moonwellGlmrAbi"
 import { KnownResponse } from "../types"
 import { SquidError } from "@0xsquid/sdk/dist/error"
 import squid from "../lib/squidClient"
-import ENV from "../config/env"
 
 const SquidCallType = {
   DEFAULT: 0,
@@ -21,28 +20,27 @@ type Params = {
   fromChain: number
   fromToken: string
   weiAmount: string
+  signer: ethers.Wallet | ethers.Signer
 }
 
 export async function stakeMGLMR({
   fromChain,
   fromToken,
-  weiAmount
+  weiAmount,
+  signer
 }: Params): Promise<KnownResponse<StatusResponse>> {
   try {
-    const provider = new ethers.providers.JsonRpcProvider(
-      ENV.AVALANCHE_RPC_ENDPOINT
-    )
-    const signer = new ethers.Wallet(ENV.LOCAL_WALLET_PRIVATE_KEY, provider)
+    const signerAddress = await signer.getAddress()
 
     const moonwellGlmrInterface = new ethers.utils.Interface(moonwellGlmrAbi)
     const mintEncodeData = moonwellGlmrInterface.encodeFunctionData("mint")
     const transferMglmrEncodeData = moonwellGlmrInterface.encodeFunctionData(
       "transfer",
-      [signer.address, "0"]
+      [signerAddress, "0"]
     )
 
     const { route } = await squid.getRoute({
-      toAddress: signer.address,
+      toAddress: signerAddress,
       fromChain,
       fromToken,
       fromAmount: weiAmount,
@@ -76,10 +74,10 @@ export async function stakeMGLMR({
       ]
     })
 
-    const tx = (await squid.executeRoute({
+    const tx = await squid.executeRoute({
       signer,
       route
-    })) as ethers.providers.TransactionResponse
+    })
 
     const txReceipt = await tx.wait()
 
