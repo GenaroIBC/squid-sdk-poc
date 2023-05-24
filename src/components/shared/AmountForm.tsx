@@ -2,7 +2,7 @@ import { useId } from "react"
 
 type Props = {
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  label: string
+  label?: string
 }
 
 export function AmountForm({ handleChange, label }: Props) {
@@ -11,14 +11,16 @@ export function AmountForm({ handleChange, label }: Props) {
   return (
     <form
       onSubmit={event => event.preventDefault()}
-      className="flex flex-col gap-2 items-center justify-center w-full"
+      className="flex flex-col gap-2 items-center justify-center"
     >
-      <label
-        htmlFor={amountId}
-        className="text-sm font-medium text-white text-center"
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          htmlFor={amountId}
+          className="text-sm font-medium text-white text-center"
+        >
+          {label}
+        </label>
+      )}
       <input
         onChange={handleChange}
         type="number"
@@ -26,7 +28,8 @@ export function AmountForm({ handleChange, label }: Props) {
         id={amountId}
         defaultValue={1}
         min={0}
-        className="block max-w-full text-center p-2 text-2xl bg-transparent placeholder-gray-400 text-white focus:outline-none"
+        placeholder="0"
+        className="font-bold min-w-0 w-full flex-grow-0 text-2xl bg-transparent placeholder-gray-400 text-white focus:outline-none"
       />
     </form>
   )

@@ -27,7 +27,7 @@ export function Dropdown({ label, children }: Props) {
   })
 
   return (
-    <div className="relative">
+    <div className="relative w-fit flex gap-2">
       <input
         ref={checkboxRef}
         type="checkbox"
@@ -37,12 +37,12 @@ export function Dropdown({ label, children }: Props) {
       />
       <label
         htmlFor={dropdownId}
-        className="peer flex items-center space-x-1 cursor-pointer bg-slate-700 px-4 py-2 rounded-xl"
+        className="peer flex items-center gap-2 space-x-1 cursor-pointer bg-white/10 p-2 rounded-xl font-bold"
       >
         {label}
 
         <svg
-          className="h-4 w-4"
+          className="h-4 w-4 flex-1 flex-grow"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
