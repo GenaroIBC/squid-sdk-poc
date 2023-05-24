@@ -74,15 +74,30 @@ export function Stake() {
     })
   }, [selectedToken])
 
+  const handleChangeSquidBaseURL = async (event: React.FormEvent) => {
+    event.preventDefault()
+
+    const form = event.target as HTMLFormElement
+    const formData = new FormData(form)
+    const squidBaseURL = String(formData.get("squid-base-url")).trim()
+    if (squidBaseURL) {
+      squidClient.setConfig({
+        baseUrl: squidBaseURL
+      })
+
+      form.reset()
+    }
+  }
+
   return (
-    <section className="flex max-w-lg mx-auto flex-col gap-4 items-center justify-center bg-slate-900 p-4 rounded-md">
+    <section className="flex max-w-lg mx-auto flex-col gap-2 items-center justify-center p-4 rounded-md">
       <div className="flex justify-center my-8">
         <ConnectButton />
       </div>
 
       {signer.data && (
         <>
-          <section className="flex flex-wrap gap-2 justify-center items-center">
+          <section className="flex flex-wrap gap-2 justify-center items-center my-4">
             From
             <Dropdown
               label={
@@ -166,6 +181,30 @@ export function Stake() {
           <StakingStatus status={status} />
         </>
       )}
+
+      <form
+        onSubmit={handleChangeSquidBaseURL}
+        className="flex flex-col gap-2 py-4"
+      >
+        <label
+          htmlFor="squid-base-url"
+          className="flex flex-col gap-2 text-center"
+        >
+          Squid Base URL 🔗
+        </label>
+
+        <div className="flex gap-2">
+          <input
+            type="url"
+            name="squid-base-url"
+            id="squid-base-url"
+            className="p-2 text-xl bg-slate-800 focus:bg-slate-70 0 rounded-md placeholder-gray-400 text-white focus:outline-none"
+          />
+          <button className="bg-blue-500 rounded-md text-sm py-2 px-4 hover:bg-blue-600">
+            Change URL
+          </button>
+        </div>
+      </form>
     </section>
   )
 }
