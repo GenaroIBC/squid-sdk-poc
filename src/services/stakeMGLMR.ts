@@ -78,7 +78,7 @@ export async function stakeMGLMR({
       route
     })
 
-    const txReceipt = await tx.wait()
+    await tx.wait()
 
     await new Promise(resolve => setTimeout(resolve, 5000))
 
