@@ -1,7 +1,6 @@
-import { StatusResponse } from "@0xsquid/sdk"
 import { ethers } from "ethers"
 import moonwellGlmrAbi from "../abi/moonwellGlmrAbi"
-import { KnownResponse } from "../types"
+import type { KnownResponse, StakingResult } from "../types"
 import { SquidError } from "@0xsquid/sdk/dist/error"
 import squid from "../lib/squidClient"
 
@@ -28,7 +27,7 @@ export async function stakeMGLMR({
   fromToken,
   weiAmount,
   signer
-}: Params): Promise<KnownResponse<StatusResponse>> {
+}: Params): Promise<KnownResponse<StakingResult>> {
   try {
     const signerAddress = await signer.getAddress()
 
@@ -83,9 +82,24 @@ export async function stakeMGLMR({
 
     await new Promise(resolve => setTimeout(resolve, 5000))
 
-    const status = await squid.getStatus({
-      transactionId: txReceipt.transactionHash
-    })
+    const status = {
+      value: String(
+        (
+          Number(tx.value) /
+          Math.pow(
+            10,
+            squid.tokens.find(token => token.address === fromToken)?.decimals ??
+              0
+          )
+        ).toFixed(2)
+      ),
+      fromChain: squid.chains.find(chain => chain.chainId === fromChain),
+      toChain: squid.chains.find(chain => chain.chainId === moonbeamId),
+      fromToken: squid.tokens.find(token => token.address === fromToken),
+      toToken: squid.tokens
+        .filter(token => token.chainId === moonbeamId)
+        .find(token => token.address === nativeToken)
+    }
 
     return { ok: true, data: status }
   } catch (error) {

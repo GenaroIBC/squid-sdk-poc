@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { useEffect, useState } from "react"
 import { stakeMGLMR } from "../services/stakeMGLMR"
-import type { ChainData, StatusResponse, TokenData } from "@0xsquid/sdk"
+import type { ChainData, TokenData } from "@0xsquid/sdk"
 import { ethers } from "ethers"
 import { List } from "./shared/List"
 import { ListItem } from "./shared/ListItem"
@@ -12,6 +12,7 @@ import { StakingStatus } from "./StakingStatus"
 import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
 import { useSigner } from "wagmi"
+import type { StakingResult } from "../types"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -23,7 +24,7 @@ export function Stake() {
   )
   const signer = useSigner()
 
-  const [status, setStatus] = useState<StatusResponse | null>(null)
+  const [status, setStatus] = useState<StakingResult | null>(null)
   const [amount, setAmount] = useState("1")
   const [tokenPrice, setTokenPrice] = useState(0)
 
@@ -37,6 +38,7 @@ export function Stake() {
 
     setLoading(true)
     setError(null)
+    setStatus(null)
     stakeMGLMR({
       fromChain: Number(chainId),
       fromToken: address,
@@ -98,7 +100,7 @@ export function Stake() {
             name="squid-base-url"
             id="squid-base-url"
             placeholder="Squid Base URL"
-            className="p-2 text-sm bg-slate-800 focus:bg-slate-70 0 rounded-md font-bold min-w-0 w-full flex-grow-0 placeholder-gray-400 text-white focus:outline-none"
+            className="p-2 text-sm bg-slate-800 focus:bg-slate-70 rounded-md min-w-0 w-full flex-grow-0 placeholder-gray-400 text-white focus:outline-none"
           />
           <button className="bg-blue-500 rounded-md text-sm py-2 p-4 w-fit whitespace-nowrap hover:bg-blue-600">
             Change URL
@@ -110,7 +112,7 @@ export function Stake() {
 
       {signer.data && (
         <section className="flex flex-col items-center justify-center gap-2 my-20 max-w-md mx-auto">
-          <article className="flex gap-4 items-center justify-between bg-blue-950 p-4 rounded-md">
+          <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
               <AmountForm
                 handleChange={event => setAmount(event.target.value)}
@@ -190,9 +192,13 @@ export function Stake() {
           >
             {loading ? <Loading width="1.5rem" height="1.5rem" /> : <>Stake</>}
           </button>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
+          {error && (
+            <p className="overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-1 px-2 rounded-md">
+              {error}
+            </p>
+          )}
 
-          <StakingStatus status={status} />
+          <StakingStatus status={status} tokenPrice={tokenPrice} />
         </section>
       )}
     </section>
