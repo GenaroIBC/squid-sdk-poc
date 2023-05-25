@@ -9,7 +9,7 @@ Proof of concept of the [Squid SDK](https://github.com/0xsquid/squid-sdk)
 1. Clone the Squid Core repo and install dependencies
 
 ```bash
-git clone https://github.com/0xsquid/squid-core.git && cd ./squid-core && yarn install
+git clone https://github.com/0xsquid/squid-core.git && cd ./squid-core && mv packages/contracts/secret.example.json packages/contracts/secret.json && yarn install
 ```
 
 2. Start the Axelar development environment server
