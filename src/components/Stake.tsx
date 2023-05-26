@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { stakeMGLMR } from "../services/stakeMGLMR"
 import type { ChainData, RouteData, TokenData } from "@0xsquid/sdk"
 import { ethers } from "ethers"
@@ -125,6 +125,16 @@ export function Stake() {
       form.reset()
     }
   }
+
+  const isFirstRender = useRef(true)
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      handleGetTokenPrice({ token: selectedToken })
+    } else {
+      isFirstRender.current = false
+    }
+  }, [selectedToken])
 
   return (
     <section className="flex mx-auto flex-col gap-2 p-4 rounded-md h-screen bg-slate-900">
