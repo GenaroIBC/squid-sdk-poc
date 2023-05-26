@@ -26,7 +26,7 @@ export function AmountForm({ handleChange, label }: Props) {
         type="number"
         name={amountId}
         id={amountId}
-        defaultValue={1}
+        defaultValue={0}
         min={0}
         placeholder="0"
         className="font-bold min-w-0 w-full flex-grow-0 text-2xl bg-transparent placeholder-gray-400 text-white focus:outline-none"

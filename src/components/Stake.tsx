@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { stakeMGLMR } from "../services/stakeMGLMR"
-import type { ChainData, TokenData } from "@0xsquid/sdk"
+import type { ChainData, RouteData, TokenData } from "@0xsquid/sdk"
 import { ethers } from "ethers"
 import { List } from "./shared/List"
 import { ListItem } from "./shared/ListItem"
@@ -13,6 +13,7 @@ import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
 import { useSigner } from "wagmi"
 import type { StakingResult } from "../types"
+import { quoteStakedMGLMR } from "../services/quoteStakedMGLMR"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -25,32 +26,30 @@ export function Stake() {
   const signer = useSigner()
 
   const [status, setStatus] = useState<StakingResult | null>(null)
-  const [amount, setAmount] = useState("1")
+  const [amount, setAmount] = useState("0")
   const [tokenPrice, setTokenPrice] = useState(0)
+  const [isFetchingQuote, setIsFetchingQuote] = useState(false)
+  const [isFetchingTokenPrice, setIsFetchingTokenPrice] = useState(false)
 
-  const [loading, setLoading] = useState(false)
+  const [isStaking, setIsStaking] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [route, setRoute] = useState<RouteData | null>(null)
 
   const handleStake = () => {
-    const { address, decimals } = selectedToken
-    const { chainId } = selectedChain
-    if (!chainId || !address || !decimals || !signer.data) return
+    if (!signer.data || !route) return
 
-    setLoading(true)
+    setIsStaking(true)
     setError(null)
     setStatus(null)
     stakeMGLMR({
-      fromChain: Number(chainId),
-      fromToken: address,
-      weiAmount: ethers.utils.parseUnits(amount, decimals).toString(),
-      signer: signer.data
+      signer: signer.data,
+      route
     })
       .then(response => {
         if (!response.ok) return setError(response.error)
-
-        setStatus(response.data)
+        // setStatus(response.data)
       })
-      .finally(() => setLoading(false))
+      .finally(() => setIsStaking(false))
   }
 
   const handleChangeChain = (chain: ChainData) => {
@@ -62,19 +61,55 @@ export function Stake() {
     setSelectedChain(chain)
   }
 
-  useEffect(() => {
-    const { chainId, address } = selectedToken
+  const handleChangeToken = (token: TokenData) => {
+    setSelectedToken(token)
+    handleQuoteToken({ amount })
+    handleGetTokenPrice({ token })
+  }
+
+  const handleQuoteToken = async ({ amount }: { amount: string }) => {
+    const { address, decimals } = selectedToken
+    const { chainId } = selectedChain
+    if (!chainId || !address || !decimals || !signer.data || !Number(amount))
+      return
+    setIsFetchingQuote(true)
+    quoteStakedMGLMR({
+      fromChain: Number(chainId),
+      fromToken: address,
+      weiAmount: ethers.utils.parseUnits(amount, decimals).toString(),
+      signer: signer.data
+    })
+      .then(result => {
+        if (!result.ok) return setError(result.error)
+        return setRoute(result.data)
+      })
+      .finally(() => {
+        setIsFetchingQuote(false)
+      })
+  }
+
+  const handleGetTokenPrice = async ({
+    token
+  }: {
+    token: Partial<TokenData>
+  }) => {
+    const { chainId, address } = token
     if (!chainId || !address) return
 
+    setTokenPrice(0)
+    setIsFetchingTokenPrice(true)
     getTokenPrice({
       chainId: String(chainId),
       tokenAddress: address
-    }).then(result => {
-      if (!result.ok) return setError(result.error)
-
-      return setTokenPrice(result.data)
     })
-  }, [selectedToken])
+      .then(result => {
+        if (!result.ok) return setError(result.error)
+        return setTokenPrice(result.data)
+      })
+      .finally(() => {
+        setIsFetchingTokenPrice(false)
+      })
+  }
 
   const handleChangeSquidBaseURL = async (event: React.FormEvent) => {
     event.preventDefault()
@@ -115,11 +150,35 @@ export function Stake() {
           <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
               <AmountForm
-                handleChange={event => setAmount(event.target.value)}
+                handleChange={event => {
+                  const newAmount = event.target.value
+                  if (!newAmount) return
+                  setAmount(newAmount)
+                  handleQuoteToken({ amount: newAmount })
+                }}
               />
-              <span className="text-gray-400 w-full text-sm">
-                ${(tokenPrice * Number(amount)).toFixed(2)}
-              </span>
+
+              {isFetchingTokenPrice ? (
+                <div className="flex items-center relative w-12 text-sm text-transparent">
+                  <span className="select-none">0</span>
+                  <div className="absolute h-2 w-full bg-gray-400 rounded-full animate-pulse"></div>
+                </div>
+              ) : (
+                <span className="text-gray-400 w-full text-sm">
+                  ${tokenPrice.toFixed(2)}
+                </span>
+              )}
+
+              {isFetchingQuote ? (
+                <div className="flex items-center relative w-12 text-sm text-transparent">
+                  <span className="select-none">0</span>
+                  <div className="absolute h-2 w-full bg-gray-400 rounded-full animate-pulse"></div>
+                </div>
+              ) : (
+                <span className="text-gray-400 w-full text-sm">
+                  ${route?.estimate.fromAmountUSD ?? 0}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col items-end gap-2">
@@ -172,7 +231,7 @@ export function Stake() {
                         imgSrc={token.logoURI}
                         title={token.symbol}
                         subtitle={token.name}
-                        onClick={() => setSelectedToken(token)}
+                        onClick={() => handleChangeToken(token)}
                       />
                     ))}
                 </List>
@@ -183,14 +242,18 @@ export function Stake() {
           <button
             className="bg-blue-500 flex justify-center items-center py-2 px-4 text-white w-full"
             disabled={
-              loading ||
+              isStaking ||
               !amount ||
               !selectedToken.address ||
               !selectedChain.chainId
             }
             onClick={handleStake}
           >
-            {loading ? <Loading width="1.5rem" height="1.5rem" /> : <>Stake</>}
+            {isStaking ? (
+              <Loading width="1.5rem" height="1.5rem" />
+            ) : (
+              <>Stake</>
+            )}
           </button>
           {error && (
             <p className="overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-1 px-2 rounded-md">
