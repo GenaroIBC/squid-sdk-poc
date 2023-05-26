@@ -256,7 +256,14 @@ export function Stake() {
             )}
           </button>
           {error && (
-            <p className="overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-1 px-2 rounded-md">
+            <p className="relative overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-1 px-2 rounded-md">
+              <button
+                onClick={() => setError(null)}
+                title="Hide error message"
+                className="absolute top-1 right-1 bg-red-950 border-2 border-red-400 hover:!border-red-400 hover:bg-red-900 px-2 py-1"
+              >
+                x
+              </button>
               {error}
             </p>
           )}
