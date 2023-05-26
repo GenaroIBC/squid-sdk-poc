@@ -3,18 +3,12 @@ import { KnownResponse } from "../types"
 import squidClient from "../lib/squidClient"
 import moonwellGlmrAbi from "../abi/moonwellGlmrAbi"
 import { RouteData } from "@0xsquid/sdk"
-
-const moonwellGlmrAddress = "0x091608f4e4a15335145be0A279483C0f8E4c7955"
-
-const moonbeamId = 1284
-const nativeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
-
-const SquidCallType = {
-  DEFAULT: 0,
-  FULL_TOKEN_BALANCE: 1,
-  FULL_NATIVE_BALANCE: 2,
-  COLLECT_TOKEN_BALANCE: 3
-}
+import {
+  MOONBEAM_ID,
+  MOONWELL_GLMR_CONTRACT_ADDRESS,
+  NATIVE_TOKEN,
+  SquidCallType
+} from "../constants"
 
 type Params = {
   fromChain: number
@@ -44,14 +38,14 @@ export async function quoteStakedMGLMR({
       fromChain,
       fromToken,
       fromAmount: weiAmount,
-      toChain: moonbeamId,
-      toToken: nativeToken,
+      toChain: MOONBEAM_ID,
+      toToken: NATIVE_TOKEN,
       slippage: 1,
 
       customContractCalls: [
         {
           callType: SquidCallType.FULL_NATIVE_BALANCE,
-          target: moonwellGlmrAddress,
+          target: MOONWELL_GLMR_CONTRACT_ADDRESS,
           value: "0",
           callData: mintEncodeData,
           payload: {
@@ -62,11 +56,11 @@ export async function quoteStakedMGLMR({
         },
         {
           callType: SquidCallType.FULL_TOKEN_BALANCE,
-          target: moonwellGlmrAddress,
+          target: MOONWELL_GLMR_CONTRACT_ADDRESS,
           value: "0",
           callData: transferMglmrEncodeData,
           payload: {
-            tokenAddress: moonwellGlmrAddress,
+            tokenAddress: MOONWELL_GLMR_CONTRACT_ADDRESS,
             inputPos: 1
           },
           estimatedGas: "50000"
