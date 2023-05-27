@@ -160,9 +160,9 @@ export function Stake() {
           <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
               <AmountForm
-                handleChange={event => {
-                  const newAmount = event.target.value
-                  if (!newAmount) return
+                debounceTime={500}
+                handleChange={newAmount => {
+                  console.log("new amount 🌟")
                   setAmount(newAmount)
                   handleQuoteToken({ amount: newAmount })
                 }}
@@ -273,11 +273,11 @@ export function Stake() {
             )}
           </button>
           {error && (
-            <p className="relative overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-1 px-2 rounded-md">
+            <p className="relative overflow-hidden w-full text-red-400 text-xs border-2 border-red-400 bg-red-950 text-center py-2 px-2 rounded-md">
               <button
                 onClick={() => setError(null)}
                 title="Hide error message"
-                className="absolute top-1 right-1 bg-red-950 border-2 border-red-400 hover:!border-red-400 hover:bg-red-900 px-2 py-1"
+                className="absolute top-1 right-1 bg-red-950 border-2 border-red-400 hover:!border-red-400 hover:bg-red-900 px-1.5 py-0.5"
               >
                 x
               </button>
