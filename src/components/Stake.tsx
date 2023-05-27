@@ -133,7 +133,6 @@ export function Stake() {
   useEffect(() => {
     if (isFirstRender.current) {
       handleGetTokenPrice({ token: selectedToken })
-    } else {
       isFirstRender.current = false
     }
   }, [selectedToken])
