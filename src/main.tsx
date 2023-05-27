@@ -29,7 +29,7 @@ const avalancheChain: Chain = {
   rpcUrls: {
     public: { http: [""] },
     default: {
-      http: [ENV.AVALANCHE_RPC_ENDPOINT]
+      http: [ENV.VITE_AVALANCHE_RPC_ENDPOINT]
     }
   },
   testnet: true
