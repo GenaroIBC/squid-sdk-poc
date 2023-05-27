@@ -59,6 +59,8 @@ export function Stake() {
 
     setSelectedToken(firstTokenOnNewChain)
     setSelectedChain(chain)
+    handleQuoteToken({ amount })
+    handleGetTokenPrice({ token: firstTokenOnNewChain })
   }
 
   const handleChangeToken = (token: TokenData) => {
@@ -191,7 +193,11 @@ export function Stake() {
                   </div>
                 ) : (
                   <span className="text-white">
-                    {(Number(route?.estimate.toAmount ?? 0) / 1e18).toFixed(2)}
+                    {!amount
+                      ? (0).toFixed(2)
+                      : (Number(route?.estimate.toAmount ?? 0) / 1e18).toFixed(
+                          2
+                        )}
                   </span>
                 )}
                 <span>GLMR</span>
@@ -260,7 +266,7 @@ export function Stake() {
             className="bg-blue-500 flex justify-center items-center py-2 px-4 text-white w-full"
             disabled={
               isStaking ||
-              !amount ||
+              !Number(amount) ||
               !selectedToken.address ||
               !selectedChain.chainId
             }
