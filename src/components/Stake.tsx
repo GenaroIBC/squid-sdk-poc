@@ -178,17 +178,24 @@ export function Stake() {
                   ${tokenPrice.toFixed(2)}
                 </span>
               )}
-
-              {isFetchingQuote ? (
-                <div className="flex items-center relative w-12 text-sm text-transparent">
-                  <span className="select-none">0</span>
-                  <div className="absolute h-2 w-full bg-gray-400 rounded-full animate-pulse"></div>
-                </div>
-              ) : (
-                <span className="text-gray-400 w-full text-sm">
-                  ${route?.estimate.fromAmountUSD ?? 0}
-                </span>
-              )}
+              <div className="text-xs text-gray-400 flex gap-0.5">
+                <span>you will get</span>
+                {isFetchingQuote ? (
+                  <div className="flex items-center relative text-transparent">
+                    <span className="select-none">
+                      {(Number(route?.estimate.toAmount ?? 0) / 1e18).toFixed(
+                        2
+                      )}
+                    </span>
+                    <div className="absolute h-2 w-full bg-gray-400 rounded-full animate-pulse"></div>
+                  </div>
+                ) : (
+                  <span className="text-white">
+                    {(Number(route?.estimate.toAmount ?? 0) / 1e18).toFixed(2)}
+                  </span>
+                )}
+                <span>GLMR</span>
+              </div>
             </div>
 
             <div className="flex flex-col items-end gap-2">
