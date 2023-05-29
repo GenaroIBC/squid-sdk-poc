@@ -12,7 +12,7 @@ type Params = {
 export async function stakeMGLMR({
   signer,
   route
-}: Params): Promise<KnownResponse<string>> {
+}: Params): Promise<KnownResponse<ethers.providers.TransactionResponse>> {
   try {
     const tx = await squid.executeRoute({
       signer,
@@ -21,7 +21,10 @@ export async function stakeMGLMR({
 
     await tx.wait()
 
-    return { ok: true, data: "success" }
+    return {
+      ok: true,
+      data: tx
+    }
   } catch (error) {
     return {
       ok: false,

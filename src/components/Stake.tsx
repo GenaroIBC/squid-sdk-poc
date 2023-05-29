@@ -12,7 +12,6 @@ import { StakingStatus } from "./StakingStatus"
 import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
 import { useSigner } from "wagmi"
-import type { StakingResult } from "../types"
 import { quoteStakedMGLMR } from "../services/quoteStakedMGLMR"
 
 export function Stake() {
@@ -25,7 +24,8 @@ export function Stake() {
   )
   const signer = useSigner()
 
-  const [status, setStatus] = useState<StakingResult | null>(null)
+  const [status, setStatus] =
+    useState<ethers.providers.TransactionResponse | null>(null)
   const [amount, setAmount] = useState("0")
   const [tokenPrice, setTokenPrice] = useState(0)
   const [isFetchingQuote, setIsFetchingQuote] = useState(false)
@@ -47,7 +47,7 @@ export function Stake() {
     })
       .then(response => {
         if (!response.ok) return setError(response.error)
-        // setStatus(response.data)
+        setStatus(response.data)
       })
       .finally(() => setIsStaking(false))
   }
@@ -163,7 +163,6 @@ export function Stake() {
               <AmountForm
                 debounceTime={500}
                 handleChange={newAmount => {
-                  console.log("new amount 🌟")
                   setAmount(newAmount)
                   handleQuoteToken({ amount: newAmount })
                 }}
