@@ -11,14 +11,18 @@ import squidClient from "../lib/squidClient"
 import { StakingStatus } from "./StakingStatus"
 import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
-import { useSigner } from "wagmi"
+import { useNetwork, useSigner } from "wagmi"
 import { quoteStakedMGLMR } from "../services/quoteStakedMGLMR"
+import { switchNetwork } from "wagmi/actions"
 import { getMGLMRBalance } from "../services/getMGLMRBalance"
 import { TokenBalance } from "./TokenBalance"
 
 export function Stake() {
+  const currentNetwork = useNetwork()
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
-    squidClient.chains[0]
+    squidClient.chains.find(
+      chain => chain.chainId === currentNetwork.chain?.id
+    ) ?? squidClient.chains[0]
   )
   const [selectedToken, setSelectedToken] = useState<Partial<TokenData>>(
     squidClient.tokens.find(token => token.chainId === selectedChain.chainId) ??
@@ -65,6 +69,7 @@ export function Stake() {
     setSelectedChain(chain)
     handleQuoteToken({ amount })
     handleGetTokenPrice({ token: firstTokenOnNewChain })
+    switchNetwork({ chainId: Number(chain.chainId) })
   }
 
   const handleChangeToken = (token: TokenData) => {
