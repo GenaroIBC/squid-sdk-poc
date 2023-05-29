@@ -16,7 +16,6 @@ export function AmountForm({ handleChange, label, debounceTime }: Props) {
     )
 
     return () => {
-      console.log("preventing api call 🤩")
       clearTimeout(debounceTimeout)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

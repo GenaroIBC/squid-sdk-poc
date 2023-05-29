@@ -75,6 +75,7 @@ export function Stake() {
     if (!chainId || !address || !decimals || !signer.data || !Number(amount))
       return
     setIsFetchingQuote(true)
+    setRoute(null)
     quoteStakedMGLMR({
       fromChain: Number(chainId),
       fromToken: address,
@@ -266,7 +267,8 @@ export function Stake() {
               isStaking ||
               !Number(amount) ||
               !selectedToken.address ||
-              !selectedChain.chainId
+              !selectedChain.chainId ||
+              !route
             }
             onClick={handleStake}
           >
