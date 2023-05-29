@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { stakeMGLMR } from "../services/stakeMGLMR"
 import type { ChainData, RouteData, TokenData } from "@0xsquid/sdk"
 import { ethers } from "ethers"
@@ -13,6 +13,7 @@ import { AmountForm } from "./shared/AmountForm"
 import { getTokenPrice } from "../services/getTokenPrice"
 import { useSigner } from "wagmi"
 import { quoteStakedMGLMR } from "../services/quoteStakedMGLMR"
+import { getMGLMRBalance } from "../services/getMGLMRBalance"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -34,6 +35,7 @@ export function Stake() {
   const [isStaking, setIsStaking] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [route, setRoute] = useState<RouteData | null>(null)
+  const [mglmrBalance, setMglmrBalance] = useState<string | null>(null)
 
   const handleStake = () => {
     if (!signer.data || !route) return
@@ -48,6 +50,7 @@ export function Stake() {
       .then(response => {
         if (!response.ok) return setError(response.error)
         setStatus(response.data)
+        setTimeout(() => updateMGLMRBalance(), 5000)
       })
       .finally(() => setIsStaking(false))
   }
@@ -68,6 +71,14 @@ export function Stake() {
     handleQuoteToken({ amount })
     handleGetTokenPrice({ token })
   }
+
+  const updateMGLMRBalance = useCallback(async () => {
+    if (!signer.data) return
+    const result = await getMGLMRBalance({ signer: signer.data })
+
+    if (!result.ok) return
+    setMglmrBalance(result.data)
+  }, [signer.data])
 
   const handleQuoteToken = async ({ amount }: { amount: string }) => {
     const { address, decimals } = selectedToken
@@ -138,6 +149,10 @@ export function Stake() {
     }
   }, [selectedToken])
 
+  useEffect(() => {
+    updateMGLMRBalance()
+  }, [updateMGLMRBalance, signer.data])
+
   return (
     <section className="flex mx-auto flex-col gap-2 p-4 rounded-md h-screen bg-slate-900">
       <nav className="flex justify-between w-full gap-2 items-center max-w-5xl mx-auto">
@@ -159,6 +174,8 @@ export function Stake() {
 
       {signer.data && (
         <section className="flex flex-col items-center justify-center gap-2 my-20 max-w-md mx-auto">
+          <span>${mglmrBalance} mGLMR</span>
+
           <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
               <AmountForm
