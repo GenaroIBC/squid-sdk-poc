@@ -14,6 +14,7 @@ import { getTokenPrice } from "../services/getTokenPrice"
 import { useSigner } from "wagmi"
 import { quoteStakedMGLMR } from "../services/quoteStakedMGLMR"
 import { getMGLMRBalance } from "../services/getMGLMRBalance"
+import { TokenBalance } from "./TokenBalance"
 
 export function Stake() {
   const [selectedChain, setSelectedChain] = useState<Partial<ChainData>>(
@@ -174,7 +175,7 @@ export function Stake() {
 
       {signer.data && (
         <section className="flex flex-col items-center justify-center gap-2 my-20 max-w-md mx-auto">
-          <span>${mglmrBalance} mGLMR</span>
+          <TokenBalance balance={String(mglmrBalance ?? 0)} tokenName="mGLMR" />
 
           <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
