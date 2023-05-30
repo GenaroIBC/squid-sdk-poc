@@ -36,6 +36,7 @@ export function Stake() {
   const [tokenPrice, setTokenPrice] = useState(0)
   const [isFetchingQuote, setIsFetchingQuote] = useState(false)
   const [isFetchingTokenPrice, setIsFetchingTokenPrice] = useState(false)
+  const [isFetchingUserBalance, setIsFetchingUserBalance] = useState(false)
 
   const [isStaking, setIsStaking] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -55,7 +56,7 @@ export function Stake() {
       .then(response => {
         if (!response.ok) return setError(response.error)
         setStatus(response.data)
-        setTimeout(() => updateMGLMRBalance(), 5000)
+        updateMGLMRBalance({ delay: 3000 })
       })
       .finally(() => setIsStaking(false))
   }
@@ -78,13 +79,22 @@ export function Stake() {
     handleGetTokenPrice({ token })
   }
 
-  const updateMGLMRBalance = useCallback(async () => {
-    if (!signer.data) return
-    const result = await getMGLMRBalance({ signer: signer.data })
+  const updateMGLMRBalance = useCallback(
+    async ({ delay }: { delay: number }) => {
+      setIsFetchingUserBalance(true)
 
-    if (!result.ok) return
-    setMglmrBalance(result.data)
-  }, [signer.data])
+      setTimeout(() => {
+        if (!signer.data) return
+
+        getMGLMRBalance({ signer: signer.data }).then(result => {
+          setIsFetchingUserBalance(false)
+          if (!result.ok) return
+          setMglmrBalance(result.data)
+        })
+      }, delay)
+    },
+    [signer.data]
+  )
 
   const handleQuoteToken = async ({ amount }: { amount: string }) => {
     const { address, decimals } = selectedToken
@@ -156,7 +166,7 @@ export function Stake() {
   }, [selectedToken])
 
   useEffect(() => {
-    updateMGLMRBalance()
+    updateMGLMRBalance({ delay: 0 })
   }, [updateMGLMRBalance, signer.data])
 
   return (
@@ -180,7 +190,12 @@ export function Stake() {
 
       {signer.data && (
         <section className="flex flex-col items-center justify-center gap-2 my-20 max-w-md mx-auto">
-          <TokenBalance balance={String(mglmrBalance ?? 0)} tokenName="mGLMR" />
+          <div className={isFetchingUserBalance ? "animate-pulse" : ""}>
+            <TokenBalance
+              balance={String(mglmrBalance ?? 0)}
+              tokenName="mGLMR"
+            />
+          </div>
 
           <article className="flex gap-2 items-center justify-between bg-blue-950 p-4 rounded-md">
             <div className="flex flex-col gap-2 w-1/2 overflow-hidden">
