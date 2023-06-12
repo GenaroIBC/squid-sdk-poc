@@ -192,8 +192,12 @@ export function Stake() {
         <section className="flex flex-col items-center justify-center gap-2 my-20 max-w-md mx-auto">
           <div className={isFetchingUserBalance ? "animate-pulse" : ""}>
             <TokenBalance
-              balance={String(mglmrBalance ?? 0)}
-              tokenName="mGLMR"
+              balance={Number(
+                ethers.utils.formatUnits(String(mglmrBalance ?? 0), 8)
+              )
+                .toFixed(4)
+                .toString()}
+              tokenName="mGLMR balance:"
             />
           </div>
 
