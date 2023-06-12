@@ -15,24 +15,6 @@ export const StakingStatus = ({ status }: Props) => {
           </h5>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <h6 className="text-base font-medium mb-2">Type</h6>
-              <p className="whitespace-nowrap truncate text-xs">
-                {status.type}
-              </p>
-            </div>
-            <div>
-              <h6 className="text-base font-medium mb-2">Chain ID</h6>
-              <p className="whitespace-nowrap truncate text-xs">
-                {status.chainId}
-              </p>
-            </div>
-            <div>
-              <h6 className="text-base font-medium mb-2">Nonce</h6>
-              <p className="whitespace-nowrap truncate text-xs">
-                {status.nonce}
-              </p>
-            </div>
-            <div>
               <h6 className="text-base font-medium mb-2">Value</h6>
               <p className="whitespace-nowrap truncate text-xs">
                 {status.value.toString()}
@@ -53,12 +35,6 @@ export const StakingStatus = ({ status }: Props) => {
             <div>
               <h6 className="text-base font-medium mb-2">To</h6>
               <p className="whitespace-nowrap truncate text-xs">{status.to}</p>
-            </div>
-            <div>
-              <h6 className="text-base font-medium mb-2">Confirmations</h6>
-              <p className="whitespace-nowrap truncate text-xs">
-                {status.confirmations}
-              </p>
             </div>
           </div>
         </section>
