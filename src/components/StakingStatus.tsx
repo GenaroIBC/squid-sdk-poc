@@ -10,9 +10,17 @@ export const StakingStatus = ({ status }: Props) => {
     <>
       {status ? (
         <section className="shadow rounded-lg p-6 bg-slate-800">
-          <h5 className="text-xl text-white font-semibold mb-4">
+          <h5 className="text-xl text-white font-semibold">
             Transaction Status
           </h5>
+          <h6 className="mt-2 mb-4">
+            <a
+              className="text-sm"
+              href={`https://axelarscan.io/gmp/${status.hash}`}
+            >
+              View on Axelarscan
+            </a>
+          </h6>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h6 className="text-base font-medium mb-2">Value</h6>
